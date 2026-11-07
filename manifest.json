@@ -1,0 +1,16 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Ad Skipper",
+  "version": "1.3.0",
+  "description": "自動略過 YouTube 影片廣告，並隱藏頁面上的廣告區塊。",
+  "permissions": ["debugger"],
+  "background": { "service_worker": "background.js" },
+  "content_scripts": [
+    {
+      "matches": ["https://www.youtube.com/*", "https://m.youtube.com/*"],
+      "js": ["content.js"],
+      "css": ["content.css"],
+      "run_at": "document_start"
+    }
+  ]
+}
