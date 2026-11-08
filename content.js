@@ -2,12 +2,7 @@
   'use strict';
   const log = (...a) => console.log('[AdSkipper]', ...a);
 
-  const SKIP_SELECTORS = [
-    '.ytp-skip-ad-button',
-    '.ytp-ad-skip-button',
-    '.ytp-ad-skip-button-modern',
-    'button[id^="skip-button"]',
-  ].join(',');
+  // SKIP_SELECTORS 來自 selectors.js（manifest 中排在本檔之前載入）
 
   // 記住廣告前的狀態，廣告結束後還原
   let adActive = false;
@@ -18,9 +13,22 @@
   const visibleSkipButton = () =>
     [...document.querySelectorAll(SKIP_SELECTORS)].find((b) => b.getBoundingClientRect().width > 0);
 
+  // 只觀察播放器的 class 變化（ad-showing 的出現與消失），
+  // 不監看整個頁面的 DOM，避免 YouTube 頻繁的 DOM 變動不斷觸發 handleAds。
+  const observer = new MutationObserver(() => handleAds());
+  let observedPlayer = null;
+
+  function watchPlayer(player) {
+    if (player === observedPlayer) return;
+    observer.disconnect();
+    observer.observe(player, { attributes: true, attributeFilter: ['class'] });
+    observedPlayer = player;
+  }
+
   function handleAds() {
     const player = document.querySelector('#movie_player, .html5-video-player');
     if (!player) return;
+    watchPlayer(player); // 播放器出現或被替換時，改為觀察新的播放器
     const video = player.querySelector('video');
     const isAd = player.classList.contains('ad-showing');
 
@@ -51,17 +59,9 @@
     }
   }
 
-  const observer = new MutationObserver(handleAds);
-  const start = () => {
-    observer.observe(document.documentElement, {
-      childList: true, subtree: true, attributes: true, attributeFilter: ['class'],
-    });
-    handleAds();
-    log('已啟動');
-  };
-  if (document.documentElement) start();
-  else document.addEventListener('DOMContentLoaded', start);
-
-  // 保險機制：每 300ms 檢查一次
+  // 定時檢查：負責找到播放器並掛上觀察，也處理略過按鈕延遲出現
+  // （按鈕出現時播放器的 class 不一定會變，所以不能只靠 observer）
   setInterval(handleAds, 300);
+  handleAds();
+  log('已啟動');
 })();

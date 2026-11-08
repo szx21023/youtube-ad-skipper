@@ -1,4 +1,5 @@
 // 用 Chrome DevTools Protocol 送出「真實」的滑鼠點擊（YouTube 會忽略程式產生的點擊）
+importScripts('selectors.js'); // 提供 SKIP_SELECTORS
 const log = (...a) => console.log('[AdSkipper]', ...a);
 const withTimeout = (p, ms, name) =>
   Promise.race([p, new Promise((_, rej) => setTimeout(() => rej(new Error(name + ' timeout')), ms))]);
@@ -7,7 +8,7 @@ const busy = new Set();
 // 在頁面中量略過按鈕的位置。必須在 attach 之後量，
 // 因為 attach 會讓 Chrome 顯示偵錯提示列，把整個網頁往下推。
 const RECT_EXPR = `(() => {
-  const b = [...document.querySelectorAll('.ytp-skip-ad-button, .ytp-ad-skip-button, .ytp-ad-skip-button-modern, button[id^="skip-button"]')]
+  const b = [...document.querySelectorAll(${JSON.stringify(SKIP_SELECTORS)})]
     .find((e) => e.getBoundingClientRect().width > 0);
   if (!b) return null;
   const r = b.getBoundingClientRect();
