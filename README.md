@@ -27,6 +27,7 @@
 | 檔案 | 用途 |
 |---|---|
 | `manifest.json` | 插件設定與權限 |
+| `selectors.js` | 略過按鈕的選擇器，`content.js` 與 `background.js` 共用 |
 | `content.js` | 偵測廣告、靜音加速、發現略過按鈕時請背景程式點擊 |
 | `background.js` | 透過 `chrome.debugger` 送出真實的滑鼠點擊 |
 | `content.css` | 隱藏頁面上的廣告區塊 |
@@ -54,7 +55,7 @@
 
 - 每次自動點擊略過時，Chrome 上方會短暫出現「已開始對這個瀏覽器進行偵錯」的提示列。這是 Chrome 強制顯示的，無法關閉。
 - 不能略過的廣告不會瞬間消失，通常需要數秒到十幾秒（受緩衝速度影響）。
-- YouTube 經常更改網頁結構，失效時通常需要更新 `content.js`、`background.js` 中的按鈕選擇器，或 `content.css` 中的廣告區塊選擇器。
+- YouTube 經常更改網頁結構，失效時通常需要更新 `selectors.js` 中的按鈕選擇器，或 `content.css` 中的廣告區塊選擇器。
 
 ## 除錯
 
