@@ -26,7 +26,9 @@
   }
 
   function handleAds() {
-    const player = document.querySelector('#movie_player, .html5-video-player');
+    // 優先找主播放器；不能用 '#movie_player, .html5-video-player'，
+    // 那會回傳 DOM 中第一個符合的元素，可能是排在前面的預覽播放器
+    const player = document.querySelector('#movie_player') || document.querySelector('.html5-video-player');
     if (!player) return;
     watchPlayer(player); // 播放器出現或被替換時，改為觀察新的播放器
     const video = player.querySelector('video');
